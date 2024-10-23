@@ -7,3 +7,5 @@ datetime
 pytz
 pandas
 imgurpython
+google-auth
+requests
