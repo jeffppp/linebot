@@ -8,4 +8,6 @@ pytz
 pandas
 imgurpython
 google-auth
+pygsheets
+schedule
 requests

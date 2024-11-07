@@ -1,18 +1,34 @@
 from flask import Flask, request, abort
 
 from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import LineBotApiError
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
 
 import re, tempfile
 from imgurpython import ImgurClient
+import schedule, time
+import random, traceback
+import game, lottery
+import talk, script, eat
+import json
+from datetime import datetime
+import sys
+import pygsheets
+import os
+import pytz
 
 app = Flask(__name__)
 
-import random, traceback
-import game, lottery
+creds_json = json.loads(os.getenv("GOOGLE_SHEETS_CREDS"))
+with open('creds.json', 'w') as json_file:
+    json.dump(creds_json, json_file, indent=4)  # indent 用於美化格式
+    
+gc = pygsheets.authorize(service_account_file="creds.json")
+survey_url = 'https://https://docs.google.com/spreadsheets/d/1ijhJM1adyzYj6YBnv0wD37-cy69NKubpP1LXhQgtHDY/edit?gid=0#gid=0'
+sh = gc.open_by_url(survey_url)
 
-import talk, script, eat
+
 #import database, googleSheet
 '''
 # Channel Access Token
@@ -81,40 +97,26 @@ def handle_postback(event):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     try:
-        #讀取資料庫狀態
-        dbStatusFile = open('dbStatus', 'r')
-
-        dbStatusTxt = dbStatusFile.readlines()[-1]
-        dbStatusFile.close()
-        import re
-        split = re.split('/', dbStatusTxt)
-        dbStatus = {'new': split[0] == 'True', 'updating': split[1] == 'True'}
-
-        #如果是初始狀態
-        '''
-        if dbStatus['new']:
-            #修改資料庫狀態True/True
-            dbStatusFile = open('dbStatus', 'a')
-            dbStatusFile.write('\nTrue/True')
-            dbStatusFile.close()
-            #回覆訊息'忙線'
-            line_bot_api.reply_message(event.reply_token,
-                                       TextMessage(text="dbStatusFile"))
-            #如果是非更新中
-            if not dbStatus['updating']:
-                #更新資料庫
-                database.updateTablesAll()
-                #修改資料庫狀態False/False
-                dbStatusFile = open('dbStatus', 'a')
-                dbStatusFile.write('\nFalse/False')
-                dbStatusFile.close()
-                #直接結束
-                return
-            #如果是更新中
-            else:
-                #直接結束
-                return
-        '''
+        ws = sh.worksheet_by_title('聊天室資料')
+        ws.cell((1,10)).set_value('=MATCH("'+room_id+'",A:A,0)')
+        ws.refresh()
+        if(ws.cell((1,10)).value=='#N/A'):
+            ws.add_rows(1)
+            L=len(ws.get_col(1,include_tailing_empty=False))
+            ws.cell((L+1,1)).set_value(room_id)
+            ws.cell((L+1,2)).set_value(profile.display_name)
+            message = TextSendMessage(text="已記錄視窗ID")
+            line_bot_api.push_message(room_id, message)
+        else:
+            members = ws.cell((int(ws.cell((1,10)).value),2)).value.split(", ")
+            if(profile.display_name not in members):
+                members.append(profile.display_name)
+                members = list(set(members))
+                members_string = ", ".join(members)
+                message = TextSendMessage(text="已記錄你的暱稱")
+                line_bot_api.push_message(room_id, message)
+                ws.cell((int(ws.cell((1,10)).value),2)).set_value(members_string)
+        
 
         replyMessageList = []
 
