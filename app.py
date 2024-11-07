@@ -25,7 +25,7 @@ with open('creds.json', 'w') as json_file:
     json.dump(creds_json, json_file, indent=4)  # indent 用於美化格式
     
 gc = pygsheets.authorize(service_account_file="creds.json")
-survey_url = 'https://https://docs.google.com/spreadsheets/d/1ijhJM1adyzYj6YBnv0wD37-cy69NKubpP1LXhQgtHDY/edit?gid=0#gid=0'
+survey_url = 'https://docs.google.com/spreadsheets/d/1ijhJM1adyzYj6YBnv0wD37-cy69NKubpP1LXhQgtHDY/edit?usp=sharing'
 sh = gc.open_by_url(survey_url)
 
 
@@ -140,12 +140,24 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token,
                                    TextMessage(text="error1"))
         error = '''LineBotApiError\n''' + e.__str__()
+        ws = sh.worksheet_by_title('log')
+        ws.add_rows(1)
+        L=len(ws.get_col(1,include_tailing_empty=False))
+        localtime = datetime.fromtimestamp(time.time()).astimezone(pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d %H:%M:%S')
+        ws.cell((L+1,1)).set_value(localtime)
+        ws.cell((L+1,2)).set_value(error)
         #googleSheet.uploadException(error)
         return
     except:
         line_bot_api.reply_message(event.reply_token,
                                    TextMessage(text="error2"))
         error = '''UnknownError\n''' + traceback.format_exc()
+        ws = sh.worksheet_by_title('log')
+        ws.add_rows(1)
+        L=len(ws.get_col(1,include_tailing_empty=False))
+        localtime = datetime.fromtimestamp(time.time()).astimezone(pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d %H:%M:%S')
+        ws.cell((L+1,1)).set_value(localtime)
+        ws.cell((L+1,2)).set_value(error)
         #googleSheet.uploadException(error)
         return
 
