@@ -97,6 +97,21 @@ def handle_postback(event):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     try:
+        usertype = event.source.type
+        if usertype is 'user':
+            room_id = event.source.user_id
+            profile = line_bot_api.get_profile(event.source.user_id)
+
+        elif usertype is 'room':
+            room_id = event.source.room_id
+            profile = line_bot_api.get_room_member_profile(
+                event.source.room_id, event.source.user_id)
+
+        else:
+            room_id = event.source.group_id
+            profile = line_bot_api.get_group_member_profile(
+                event.source.group_id, event.source.user_id)
+            
         ws = sh.worksheet_by_title('聊天室資料')
         ws.cell((1,10)).set_value('=MATCH("'+room_id+'",A:A,0)')
         ws.refresh()
