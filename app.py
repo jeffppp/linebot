@@ -54,19 +54,6 @@ refresh_token = '663b65e5cc94cc3126b488cec5cde02510b97ae5'
 
 static_tmp_path = '.'
 
-def send_push_message(USER_ID):
-    message = TextSendMessage(text="早安！這是一則自動推播訊息")
-    line_bot_api.push_message(USER_ID, message)
-
-# 設置排程任務：每天早上 9:00 推播訊息
-schedule.every(2).minutes.do(send_push_message)
-def send_push_message():
-    message = TextSendMessage(text="這是測試自動推播訊息")
-    line_bot_api.push_message("Cd4c3c686c9a00e4878ff69c8eee0d96b", message)
-def run_schedule():
-    while True:
-        schedule.run_pending()
-        time.sleep(60)  # 每分鐘檢查一次任務
         
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
@@ -153,9 +140,9 @@ def handle_message(event):
         #if len(replyMessageList) == 0:
         #    replyMessageList += script.getResponse(event)
         if len(replyMessageList) == 0:
-            #print(replyMessageList)
+            send_push_message.getResponse(event,line_bot_api,sh)
+        if len(replyMessageList) == 0:
             replyMessageList += game.getResponse(event, line_bot_api)
-            #print(replyMessageList)
         if len(replyMessageList) == 0:
             replyMessageList += lottery.getResponse(event)
         #if len(replyMessageList) == 0:
@@ -349,8 +336,10 @@ def handle_file(event):
 
 import os
 if __name__ == "__main__":
+    '''
     schedule_thread = threading.Thread(target=run_schedule)
     schedule_thread.daemon = True  # 設置為守護線程，這樣當主程式結束時該線程會自動終止
     schedule_thread.start()
+    '''
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
