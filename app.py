@@ -10,7 +10,7 @@ from imgurpython import ImgurClient
 import schedule, time
 import threading
 import random, traceback
-import game, lottery
+import game, lottery, send_push_message
 import talk, script, eat
 import json
 from datetime import datetime
