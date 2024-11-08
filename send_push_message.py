@@ -6,6 +6,9 @@ from linebot.models import *
 import re
 import pygsheets
 import time, datetime, pytz
+import requests
+from bs4 import BeautifulSoup
+
 def getResponse(content, line_bot_api, sh):
 
     try:

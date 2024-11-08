@@ -11,3 +11,4 @@ google-auth
 pygsheets
 schedule
 requests
+bs4
