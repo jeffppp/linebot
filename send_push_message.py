@@ -6,6 +6,7 @@ from linebot.models import *
 import re
 import pygsheets
 import time, datetime, pytz
+from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
@@ -179,7 +180,7 @@ def getResponse(content, line_bot_api, sh):
         ws = sh.worksheet_by_title('log')
         ws.add_rows(1)
         L=len(ws.get_col(1,include_tailing_empty=False))
-        localtime = datetime.datetime.fromtimestamp(time.time()).astimezone(pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d %H:%M:%S')
+        localtime = datetime.fromtimestamp(time.time()).astimezone(pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d %H:%M:%S')
         ws.cell((L+1,1)).set_value(localtime)
         ws.cell((L+1,2)).set_value(error)
 
@@ -190,7 +191,7 @@ def getResponse(content, line_bot_api, sh):
         ws = sh.worksheet_by_title('log')
         ws.add_rows(1)
         L=len(ws.get_col(1,include_tailing_empty=False))
-        localtime = datetime.datetime.fromtimestamp(time.time()).astimezone(pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d %H:%M:%S')
+        localtime = datetime.fromtimestamp(time.time()).astimezone(pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d %H:%M:%S')
         ws.cell((L+1,1)).set_value(localtime)
         ws.cell((L+1,2)).set_value(error)
         #googleSheet.uploadException(error)
