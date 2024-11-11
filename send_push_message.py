@@ -48,7 +48,7 @@ def getResponse(content, line_bot_api, sh):
             message=''
             numbers_as_strings = list(map(str, range(1, 20+1)))
             keywords = ["自閉","情緒","過動","以家庭為中心","早期療育"]
-            ws.cell((1,3)).set_value(", ".join(keywords))
+            ws.cell((1,10)).set_value(", ".join(keywords))
             for i in numbers_as_strings:
                 res = requests.get('https://www.beclass.com/default.php?name=ShowList&op=ShowRegist&od=&page='+i)
                 soup = BeautifulSoup(res.text, "html.parser")
@@ -71,17 +71,20 @@ def getResponse(content, line_bot_api, sh):
                                 else:
                                     message = {'Title': title,'URL': href}
                                     event_list.append(message)
-            ws.cell((2,3)).set_value("爬第一段成功")         
+            ws.cell((2,10)).set_value("爬第一段成功")         
             keywords = ["學齡前","以家庭為中心","早期療育","發展遲緩","自閉症","ADHD","情緒","社交"]
-            ws.cell((3,3)).set_value(", ".join(keywords))  
+            ws.cell((3,10)).set_value(", ".join(keywords))  
             for i in numbers_as_strings:
+                
                 res = requests.get('https://special.moe.gov.tw/study.php?&_p='+i)
                 soup = BeautifulSoup(res.text, "html.parser")
                 rows = soup.find_all('tr')
+                ws.cell((4,10)).set_value(i) 
                 for row in rows:
                     # 提取<a>标签的信息
                     a_tag = row.find('td', {'data-label': '研習日期'})
                     if a_tag:
+                        ws.cell((5,10)).set_value(i) 
                         date = a_tag.get_text()[0:10]
                         #print(date)
                         contentstr = row.select('td div a')
@@ -89,13 +92,16 @@ def getResponse(content, line_bot_api, sh):
                         href = contentstr[0].get('href')
                         if title and href and any(keyword in title for keyword in keywords):
                             if(datetime.strptime(date,'%Y-%m-%d').weekday()==6):
+                                ws.cell((6,10)).set_value(i) 
                                 message6 = {'Title': title,'URL': 'https://special.moe.gov.tw/'+href}
                                 event_list6.append(message6)
                             else:
+                                ws.cell((7,10)).set_value(i) 
                                 message = {'Title': title,'URL': 'https://special.moe.gov.tw/'+href}
                                 event_list.append(message)
+            ws.cell((8,10)).set_value(i) 
             numbers_as_strings5 = list(map(str, range(1, 4+1)))
-            ws.cell((4,3)).set_value("爬第2段成功") 
+            
             for i in numbers_as_strings5:
                 res = requests.get('https://www.pmr.org.tw/active_news/active.asp?/'+i+'.html')
                 res.encoding = res.apparent_encoding
