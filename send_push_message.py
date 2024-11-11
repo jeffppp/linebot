@@ -46,7 +46,7 @@ def getResponse(content, line_bot_api, sh):
             event_list6=[]
             message6=''
             message=''
-            numbers_as_strings = list(map(str, range(1, 20+1)))
+            numbers_as_strings = list(map(str, range(1, 7+1)))
             keywords = ["自閉","情緒","過動","以家庭為中心","早期療育"]
             ws.cell((1,10)).set_value(", ".join(keywords))
             for i in numbers_as_strings:
