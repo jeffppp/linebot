@@ -37,6 +37,7 @@ def getResponse(content, line_bot_api, sh):
         learntxt = re.split('[,，]', mes)
 
         if learntxt[0] == '給我課程':
+            ws = sh.worksheet_by_title('課程')
             headers = {
                 "Authorization": "Bearer aJC2bjm4oW1IrcqXt2B83wWMJYt10ykHdrIe3xQCPdZHZog4QvCxWotOqcyk2gUz1EmXVylUWpIasRGg8yXjGXFIZDTmZK9VqDiQMFMfZgZy9JlM9PMMBoTwmsQGnhga94T7aEOfHcbSxCrYaiygNwdB04t89/1O/w1cDnyilFU=",
                 "Content-Type": "application/json"
@@ -47,6 +48,7 @@ def getResponse(content, line_bot_api, sh):
             message=''
             numbers_as_strings = list(map(str, range(1, 20+1)))
             keywords = ["自閉","情緒","過動","以家庭為中心","早期療育"]
+            ws.cell((1,3)).set_value(", ".join(keywords))
             for i in numbers_as_strings:
                 res = requests.get('https://www.beclass.com/default.php?name=ShowList&op=ShowRegist&od=&page='+i)
                 soup = BeautifulSoup(res.text, "html.parser")
@@ -69,8 +71,9 @@ def getResponse(content, line_bot_api, sh):
                                 else:
                                     message = {'Title': title,'URL': href}
                                     event_list.append(message)
-                        
+            ws.cell((2,3)).set_value("爬第一段成功")         
             keywords = ["學齡前","以家庭為中心","早期療育","發展遲緩","自閉症","ADHD","情緒","社交"]
+            ws.cell((3,3)).set_value(", ".join(keywords))  
             for i in numbers_as_strings:
                 res = requests.get('https://special.moe.gov.tw/study.php?&_p='+i)
                 soup = BeautifulSoup(res.text, "html.parser")
@@ -92,6 +95,7 @@ def getResponse(content, line_bot_api, sh):
                                 message = {'Title': title,'URL': 'https://special.moe.gov.tw/'+href}
                                 event_list.append(message)
             numbers_as_strings5 = list(map(str, range(1, 4+1)))
+            ws.cell((4,3)).set_value("爬第2段成功") 
             for i in numbers_as_strings5:
                 res = requests.get('https://www.pmr.org.tw/active_news/active.asp?/'+i+'.html')
                 res.encoding = res.apparent_encoding
@@ -118,9 +122,10 @@ def getResponse(content, line_bot_api, sh):
                                     event_list.append(message)
 
             
-            ws = sh.worksheet_by_title('課程')
+            
             nevent_list=[]
             nevent_list6=[]
+            ws.cell((5,3)).set_value("爬第3段成功") 
             for c,event in enumerate(event_list):
                 ws.cell((1,5)).set_value('=MATCH("'+event["Title"]+'",A:A,0)')
                 ws.refresh()
@@ -143,7 +148,11 @@ def getResponse(content, line_bot_api, sh):
             
             #麻token = 'jwHaTd1H8rqIKZBOKnD6intpw45ZZ2PkahfOn96Y5S7'
             #token = 'r3ZsARd1C95quZmEA1qN7IR4KGrcabaUOYq46AUFeox'
-            if(1==0):
+            if(False):
+                data = {
+                            "to": "Cd4c3c686c9a00e4878ff69c8eee0d96b",
+                            'message': "\n其他時間的活動為:\n" + m    # 設定要發送的訊息
+                        }
                 response = requests.post("https://api.line.me/v2/bot/message/push", headers=headers, json=data)
                 #data = requests.post(url, headers=headers, data=data)
             else:
@@ -156,8 +165,13 @@ def getResponse(content, line_bot_api, sh):
                     if(count==6 or i ==nevent_list6[len(nevent_list6)-1]):
                         data = {
                             "to": "Cd4c3c686c9a00e4878ff69c8eee0d96b",
-                            'message': "\n星期天的活動為:\n" + m6    # 設定要發送的訊息
-                        }
+                            "messages": [
+                                {
+                                    "type": "text",
+                                    "text": "\n星期天的活動為:\n" + m6    # 設定要發送的訊息
+                                    }
+                                ]
+                            }
                         response = requests.post("https://api.line.me/v2/bot/message/push", headers=headers, json=data)
                         #data = requests.post(url, headers=headers, data=data)
                         count=0
@@ -168,8 +182,14 @@ def getResponse(content, line_bot_api, sh):
                     if(count==6 or i ==nevent_list[len(nevent_list)-1]):
                         data = {
                             "to": "Cd4c3c686c9a00e4878ff69c8eee0d96b",
-                            'message': "\n其他時間的活動為:\n" + m    # 設定要發送的訊息
-                        }
+                            "messages": [
+                                {
+                                    "type": "text",
+                                    "text": "\n其他時間的活動為:\n" + m    # 設定要發送的訊息
+                                    }
+                                ]
+                            }
+
                         response = requests.post("https://api.line.me/v2/bot/message/push", headers=headers, json=data)
                         #data = requests.post(url, headers=headers, data=data)
                         count=0
