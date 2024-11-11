@@ -84,7 +84,6 @@ def getResponse(content, line_bot_api, sh):
                     # 提取<a>标签的信息
                     a_tag = row.find('td', {'data-label': '研習日期'})
                     if a_tag:
-                        ws.cell((5,10)).set_value(i) 
                         date = a_tag.get_text()[0:10]
                         #print(date)
                         contentstr = row.select('td div a')
