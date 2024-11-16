@@ -48,7 +48,7 @@ def getResponse(content, line_bot_api, sh):
             count=0
             for i in nevent_list6:
                 m6 = m6 + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
-            if(len(m6)==0):
+            if(m6=='星期天課程:\n'):
                 m6="目前星期天沒課程"
             line_bot_api.reply_message(content.reply_token, TextMessage(text=m6))
 
@@ -65,7 +65,7 @@ def getResponse(content, line_bot_api, sh):
             count=0
             for i in nevent_list:
                 m = m + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
-            if(len(m)==0):
+            if(m=='其他時間課程:\n'):
                 m="目前其他時間沒課程"
             line_bot_api.reply_message(content.reply_token, TextMessage(text=m))
         if(learntxt[0]=="給我課程"):
@@ -88,7 +88,7 @@ def getResponse(content, line_bot_api, sh):
                     message.append(TextMessage(text=m6))
                     
             if(m6=="星期天課程:\n" and len(message)<5):
-                message.appendTextMessage(text="目前星期天沒課程")
+                message.append(TextMessage(text="目前星期天沒課程"))
             nevent_list=[]
             ws = sh.worksheet_by_title('不重複課程')
             L=len(ws.get_col(1,include_tailing_empty=False))
