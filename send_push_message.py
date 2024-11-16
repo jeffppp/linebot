@@ -43,13 +43,14 @@ def getResponse(content, line_bot_api, sh):
             ws = sh.worksheet_by_title('不重複課程')
             L=len(ws.get_col(1,include_tailing_empty=False))
             for i in range(1,L+1):
-                event["Title"] = ws.cell((i,1)).value()
-                event["URL"] = ws.cell((i,2)).value()
+                
+                event["Title"] = ws.cell((i,1)).value
+                event["URL"] = ws.cell((i,2)).value
                 nevent_list.append(event)
             L=len(ws.get_col(3,include_tailing_empty=False))
             for i in range(1,L+1):
-                event6["Title"] = ws.cell((i,1)).value()
-                event6["URL"] = ws.cell((i,2)).value()
+                event6["Title"] = ws.cell((i,1)).value
+                event6["URL"] = ws.cell((i,2)).value
                 nevent_list6.append(event6)
             m6=''
             m=''
