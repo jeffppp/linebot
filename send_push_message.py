@@ -50,7 +50,7 @@ def getResponse(content, line_bot_api, sh):
             for i in range(1,L+1):
                 event6["Title"] = ws.cell((i,1)).value()
                 event6["URL"] = ws.cell((i,2)).value()
-                nevent_list6.append(event6 
+                nevent_list6.append(event6)
             m6=''
             m=''
             for i in nevent_list6:
