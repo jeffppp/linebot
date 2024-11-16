@@ -109,12 +109,6 @@ def getResponse(content, line_bot_api, sh):
             if(len(m)==0 or len(message)<5):
                 message.append(TextMessage(text="目前其他時間沒課程"))
             line_bot_api.reply_message(content.reply_token, message)
-
-
-# 最多 5 條訊息
-if len(messages) > 5:
-    messages = messages[:5]  # 如果超過 5 條，則截取前 5 條
-            line_bot_api.reply_message(content.reply_token, TextMessage(text=m))     
         return []
     except LineBotApiError as e:
         error = '''LineBotApiError\n''' + e.__str__()
