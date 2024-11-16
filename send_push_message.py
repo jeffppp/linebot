@@ -48,6 +48,8 @@ def getResponse(content, line_bot_api, sh):
             count=0
             for i in nevent_list6:
                 m6 = m6 + f'\nTitle: {i["Title"]}\nURL: {i["URL"]}\n'
+            if(len(m6)==0):
+                m6="目前星期天沒課程"
             line_bot_api.reply_message(content.reply_token, TextMessage(text=m6))
 
         if(learntxt[0]=="給我其他時間課程"):
@@ -64,6 +66,8 @@ def getResponse(content, line_bot_api, sh):
             count=0
             for i in nevent_list:
                 m = m + f'\nTitle: {i["Title"]}\nURL: {i["URL"]}\n'
+            if(len(m)==0):
+                m6="目前其他時間沒課程"
             line_bot_api.reply_message(content.reply_token, TextMessage(text=m))
              
         return []
