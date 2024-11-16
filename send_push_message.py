@@ -44,7 +44,7 @@ def getResponse(content, line_bot_api, sh):
                 event6["Title"] = ws.cell((i,3)).value
                 event6["URL"] = ws.cell((i,4)).value
                 nevent_list6.append(event6)
-            m6=''
+            m6='星期天課程:\n'
             count=0
             for i in nevent_list6:
                 m6 = m6 + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
@@ -61,7 +61,7 @@ def getResponse(content, line_bot_api, sh):
                 event["Title"] = ws.cell((i,1)).value
                 event["URL"] = ws.cell((i,2)).value
                 nevent_list.append(event)
-            m=''
+            m='其他時間課程:\n'
             count=0
             for i in nevent_list:
                 m = m + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
@@ -84,10 +84,10 @@ def getResponse(content, line_bot_api, sh):
             for i in nevent_list6:
                 m6 = m6 + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
                 count = count+1
-                if(count==6 or i ==nevent_list6[len(nevent_list6)-1]):
+                if((count==6 or i ==nevent_list6[len(nevent_list6)-1]) and len(message)<5):
                     message.append(TextMessage(text=m6))
                     
-            if(len(m6)==0):
+            if(m6=="星期天課程:\n" and len(message)<5):
                 message.appendTextMessage(text="目前星期天沒課程")
             nevent_list=[]
             ws = sh.worksheet_by_title('不重複課程')
@@ -103,10 +103,10 @@ def getResponse(content, line_bot_api, sh):
             for i in nevent_list:
                 m = m + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
                 count = count+1
-                if(count==6 or i ==nevent_list[len(nevent_list)-1] or len(message)<5):
+                if((count==6 or i ==nevent_list[len(nevent_list)-1]) and len(message)<5):
                     message.append(TextMessage(text=m))
             
-            if(len(m)==0 or len(message)<5):
+            if(m=="其他時間課程:\n" and len(message)<5):
                 message.append(TextMessage(text="目前其他時間沒課程"))
             line_bot_api.reply_message(content.reply_token, message)
         return []
