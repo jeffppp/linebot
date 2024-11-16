@@ -54,6 +54,7 @@ def getResponse(content, line_bot_api, sh):
                 nevent_list6.append(event6)
             m6=''
             m=''
+            count=0
             for i in nevent_list6:
                 m6 = m6 + f'\nTitle: {i["Title"]}\nURL: {i["URL"]}\n'
                 count = count+1
