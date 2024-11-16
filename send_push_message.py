@@ -36,40 +36,85 @@ def getResponse(content, line_bot_api, sh):
             mes = content.message.text
         learntxt = re.split('[,，]', mes)
         if(learntxt[0]=="給我星期天課程"):
-            event6={}
             nevent_list6=[]
             ws = sh.worksheet_by_title('不重複課程')
             L=len(ws.get_col(3,include_tailing_empty=False))
             for i in range(1,L+1):
-                event6["Title"] = ws.cell((i,1)).value
-                event6["URL"] = ws.cell((i,2)).value
+                event6={}
+                event6["Title"] = ws.cell((i,3)).value
+                event6["URL"] = ws.cell((i,4)).value
                 nevent_list6.append(event6)
             m6=''
             count=0
             for i in nevent_list6:
-                m6 = m6 + f'\nTitle: {i["Title"]}\nURL: {i["URL"]}\n'
+                m6 = m6 + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
             if(len(m6)==0):
                 m6="目前星期天沒課程"
             line_bot_api.reply_message(content.reply_token, TextMessage(text=m6))
 
         if(learntxt[0]=="給我其他時間課程"):
-            event={}
             nevent_list=[]
             ws = sh.worksheet_by_title('不重複課程')
             L=len(ws.get_col(1,include_tailing_empty=False))
             for i in range(1,L+1):
-                
+                event={}
                 event["Title"] = ws.cell((i,1)).value
                 event["URL"] = ws.cell((i,2)).value
                 nevent_list.append(event)
             m=''
             count=0
             for i in nevent_list:
-                m = m + f'\nTitle: {i["Title"]}\nURL: {i["URL"]}\n'
+                m = m + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
             if(len(m)==0):
-                m6="目前其他時間沒課程"
+                m="目前其他時間沒課程"
             line_bot_api.reply_message(content.reply_token, TextMessage(text=m))
-             
+        if(learntxt[0]=="給我課程"):
+            message=[]
+            nevent_list6=[]
+            ws = sh.worksheet_by_title('不重複課程')
+         
+            L=len(ws.get_col(3,include_tailing_empty=False))
+            for i in range(1,L+1):
+                event6={}
+                event6["Title"] = ws.cell((i,3)).value
+                event6["URL"] = ws.cell((i,4)).value
+                nevent_list6.append(event6)
+            m6='星期天課程:\n'
+            count=0
+            for i in nevent_list6:
+                m6 = m6 + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
+                count = count+1
+                if(count==6 or i ==nevent_list6[len(nevent_list6)-1]):
+                    message.append(TextMessage(text=m6))
+                    
+            if(len(m6)==0):
+                message.appendTextMessage(text="目前星期天沒課程")
+            nevent_list=[]
+            ws = sh.worksheet_by_title('不重複課程')
+            L=len(ws.get_col(1,include_tailing_empty=False))
+            
+            for i in range(1,L+1):
+                event={}
+                event["Title"] = ws.cell((i,1)).value
+                event["URL"] = ws.cell((i,2)).value
+                nevent_list.append(event)
+            m='其他時間課程:\n'
+            count=0
+            for i in nevent_list:
+                m = m + f'Title: {i["Title"]}\nURL: {i["URL"]}\n'
+                count = count+1
+                if(count==6 or i ==nevent_list[len(nevent_list)-1] or len(message)<5):
+                    message.append(TextMessage(text=m))
+            
+            if(len(m)==0 or len(message)<5):
+                message.append(TextMessage(text="目前其他時間沒課程"))
+            line_bot_api.reply_message(content.reply_token, message)
+
+
+# 最多 5 條訊息
+if len(messages) > 5:
+    messages = messages[:5]  # 如果超過 5 條，則截取前 5 條
+            line_bot_api.reply_message(content.reply_token, TextMessage(text=m))     
         return []
     except LineBotApiError as e:
         error = '''LineBotApiError\n''' + e.__str__()
