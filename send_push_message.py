@@ -35,11 +35,24 @@ def getResponse(content, line_bot_api, sh):
         else:
             mes = content.message.text
         learntxt = re.split('[,，]', mes)
-        if(learntxt[0]=="給我課程"):
-            event={}
+        if(learntxt[0]=="給我星期天課程"):
             event6={}
-            nevent_list=[]
             nevent_list6=[]
+            ws = sh.worksheet_by_title('不重複課程')
+            L=len(ws.get_col(3,include_tailing_empty=False))
+            for i in range(1,L+1):
+                event6["Title"] = ws.cell((i,1)).value
+                event6["URL"] = ws.cell((i,2)).value
+                nevent_list6.append(event6)
+            m6=''
+            count=0
+            for i in nevent_list6:
+                m6 = m6 + f'\nTitle: {i["Title"]}\nURL: {i["URL"]}\n'
+            line_bot_api.reply_message(content.reply_token, TextMessage(text=m6))
+
+        if(learntxt[0]=="給我其他時間課程"):
+            event={}
+            nevent_list=[]
             ws = sh.worksheet_by_title('不重複課程')
             L=len(ws.get_col(1,include_tailing_empty=False))
             for i in range(1,L+1):
@@ -47,28 +60,12 @@ def getResponse(content, line_bot_api, sh):
                 event["Title"] = ws.cell((i,1)).value
                 event["URL"] = ws.cell((i,2)).value
                 nevent_list.append(event)
-            L=len(ws.get_col(3,include_tailing_empty=False))
-            for i in range(1,L+1):
-                event6["Title"] = ws.cell((i,1)).value
-                event6["URL"] = ws.cell((i,2)).value
-                nevent_list6.append(event6)
-            m6=''
             m=''
             count=0
-            for i in nevent_list6:
-                m6 = m6 + f'\nTitle: {i["Title"]}\nURL: {i["URL"]}\n'
-                count = count+1
-                if(count==6 or i ==nevent_list6[len(nevent_list6)-1]):
-                    line_bot_api.reply_message(content.reply_token, TextMessage(text=m6))
-                    count=0
-                    m6=''
             for i in nevent_list:
                 m = m + f'\nTitle: {i["Title"]}\nURL: {i["URL"]}\n'
-                count = count+1
-                if(count==6 or i ==nevent_list[len(nevent_list)-1]):
-                    line_bot_api.reply_message(content.reply_token, TextMessage(text=m))
-                    count=0
-                    m=''                
+            line_bot_api.reply_message(content.reply_token, TextMessage(text=m))
+             
         return []
     except LineBotApiError as e:
         error = '''LineBotApiError\n''' + e.__str__()
